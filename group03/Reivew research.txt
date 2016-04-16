@@ -5,11 +5,14 @@ import requests
 import cssselect
 import urllib
 
+import enchant
+##enchant ê°€ ì•ˆë”
+
 import re
 
 def allaboutmovie(Movie_num):
     
-##¿µÈ­ ±âº»Á¤º¸ °¡Á®¿À±â
+##ì˜í™” ê¸°ë³¸ì •ë³´ ê°€ì ¸ì˜¤ê¸°
     All = { 'movie_name':'','movie_genre':"", 'movie_rating':'','review_num': '','earns':"",'start_date':"",'word_Per_review':"" , 'movie_id' :"",'num_special':""}
     
     url ='http://www.imdb.com/title/'
@@ -31,7 +34,7 @@ def allaboutmovie(Movie_num):
     review_num = int(review_num)
     earns = elem.cssselect('div.article div.txt-block')[11].text_content().strip()
     earns  = earns.replace('^()$', '')
-    earns  = earns.replace('\n', '') ##È®½ÇÇÑ ¼öÀÔÀ» °¡Á®¿À±âÀ§ÇÏ¿©
+    earns  = earns.replace('\n', '') ##í™•ì‹¤í•œ ìˆ˜ì…ì„ ê°€ì ¸ì˜¤ê¸°ìœ„í•˜ì—¬
     earns  = earns.replace('Gross:        ', '')
     earns  = earns.replace('^()$', '')
     a = re.findall(r'\((.*?)\)', earns)
@@ -50,7 +53,7 @@ def allaboutmovie(Movie_num):
 
     Review = []
     num_special=[]
-    ##cMax Page Á¶»ç
+    ##cMax Page ì¡°ì‚¬
     ur = "http://www.imdb.com/title/" + Movie_num 
     ur = ur + '/reviews?start=30'
     res = requests.get(ur)
@@ -62,12 +65,12 @@ def allaboutmovie(Movie_num):
     num = re.sub(r':', '', num)
     num = re.sub(r'\b[[0-9]*]', '', num)
     num = re.sub(r'\[', '', num)
-    ##num = num.replace('^?:', '') ##¸Æ½ºÄ«¿îÆ® °¡Á®¿À±â. 4ÆäÀÌÁö±îÁö¾øÀ¸¸é ¿À·ù°¡´É¼º
+    ##num = num.replace('^?:', '') ##ë§¥ìŠ¤ì¹´ìš´íŠ¸ ê°€ì ¸ì˜¤ê¸°. 4í˜ì´ì§€ê¹Œì§€ì—†ìœ¼ë©´ ì˜¤ë¥˜ê°€ëŠ¥ì„±
     num=int(num)
 
     
     
-    ##max ÆĞÀÌÁö ±îÁöÀÇ ´ñ±Û °¡Àú¿À±â ; ³Ê¹« ²÷°Ü¼­ 2·çÇß´Âµ¥ numÀ¸·ç ÇÏ¸é ´ÙƒJ¾î¿È
+    ##max íŒ¨ì´ì§€ ê¹Œì§€ì˜ ëŒ“ê¸€ ê°€ì €ì˜¤ê¸° ; ë„ˆë¬´ ëŠê²¨ì„œ 2ë£¨í–ˆëŠ”ë° numìœ¼ë£¨ í•˜ë©´ ë‹¤ÂƒJì–´ì˜´
     for p in range(0,num):
         url1 = 'http://www.imdb.com/title/' + Movie_num + '/reviews?start={}0'.format(p)
         resp1 = requests.get(url1)
@@ -76,7 +79,7 @@ def allaboutmovie(Movie_num):
         elem1 = html.fromstring(text1)  
     
    
-        ##eot´ñ±Û ¸ğµÎ ƒJ¾î¿À±â  ´ñ±Û Á¡¼ö °¡Á®¿À´Â°Í¹°¾îº¸±â
+        ##eotëŒ“ê¸€ ëª¨ë‘ ÂƒJì–´ì˜¤ê¸°  ëŒ“ê¸€ ì ìˆ˜ ê°€ì ¸ì˜¤ëŠ”ê²ƒë¬¼ì–´ë³´ê¸°
         articles = elem1.xpath("//div[@id='tn15content']")[0].cssselect('p')
         for a in articles:
             say = a.text_content().strip()
@@ -87,21 +90,21 @@ def allaboutmovie(Movie_num):
             Review.append(say)
             num_special.append(special)
     
-    ##´Ü¾î°³¼ö±¸ÇÏ±â        
+    ##ë‹¨ì–´ê°œìˆ˜êµ¬í•˜ê¸°        
     word_num =0
     word_num_temp=0
 
     num_Review=len(Review)-1
     num_Review = int(num_Review)
-    num_Review # ´ñ±ÛÀÇ ÃÑ °³¼ö count µ¹¸®±âÀ§ÇØ¼­
+    num_Review # ëŒ“ê¸€ì˜ ì´ ê°œìˆ˜ count ëŒë¦¬ê¸°ìœ„í•´ì„œ
     num_Review_list[0:num_Review]
     
 
     for a in range(0,num_Review):
         word_num_temp=len(re.findall(r'\S+', Review[a]))
-        word_num=word_num+word_num_temp     #´ñ±ÛµéÀÇ ÃÑ ´Ü¾î¼ö ÆÄ¾Ç
-        num_Review_list.append(word_num_temp) #´ñ±Ûº° ´Ü¾î±æÀÌ ÆÄ¾Ç
-    num_special= round(sum(num_special)*100/word_num,2)###Æ¯¼ö¹®ÀÚºñÀ² ÆÛ¼¾Æ®!!
+        word_num=word_num+word_num_temp     #ëŒ“ê¸€ë“¤ì˜ ì´ ë‹¨ì–´ìˆ˜ íŒŒì•…
+        num_Review_list.append(word_num_temp) #ëŒ“ê¸€ë³„ ë‹¨ì–´ê¸¸ì´ íŒŒì•…
+    num_special= round(sum(num_special)*100/word_num,2)###íŠ¹ìˆ˜ë¬¸ìë¹„ìœ¨ í¼ì„¼íŠ¸!!
     All={ 'movie_name':movie_name, 'movie_genre':movie_genre,'movie_rating':movie_rating,'review_num': review_num,'start_date':start_date,'earns':earns, 'word_Per_review':round(word_num/num_Review,2),'movie_id' :Movie_num, 'num_special':num_special}
     All_ser=pd.Series(All)
     
@@ -111,7 +114,7 @@ def allaboutmovie(Movie_num):
 
 
 
-###ÁøÂ¥½ÃÀÛ!!
+###ì§„ì§œì‹œì‘!!
 Total = pd.Series(index=['movie_name', 'movie_rating','review_num','earns','start_date','word_Per_review' , 'movie_id','num_special'])
 
 movie = ['tt0468569','tt1490017','tt0371746','tt1228705','tt0848228','tt2395427','tt0800080']
